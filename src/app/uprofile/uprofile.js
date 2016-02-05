@@ -209,9 +209,16 @@
 
     }]);
 
-    app.controller('ModalEditProductCtrl', function ($scope, $uibModalInstance, data,productsService) {
+    app.controller('ModalEditProductCtrl', function ($scope, $uibModalInstance, data,productsService, $state) {
         $scope.data = data;
         $scope.actionMsg = '';
+
+        var init = function() {
+            $scope.btnCancel = true;
+            $scope.btnClose = false;
+            $scope.btnSave = true;
+
+        };
 
         $scope.isSterile = function(){
             if(data.product.sterile===true){
@@ -225,6 +232,9 @@
             $scope.actionMsg = 'Updating selected product...';
             productsService.saveProduct(data.product.id,data.product).then(function(data){
                 $scope.actionMsg = 'Product Updated!';
+                $scope.btnCancel = false;
+                $scope.btnClose = true;
+                $scope.btnSave = false;
             },function(err){
                 $scope.actionMsg = 'Error updating product:: '+err;
             });
@@ -233,6 +243,13 @@
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
         };
+
+        $scope.close = function () {
+            $uibModalInstance.dismiss('close');
+            $state.go($state.current, {}, {reload: true});
+        };
+
+        init();
     });
 
     app.directive('tusDatos',['$log','globalService','userDetail','$rootScope',function($log,globalService,userDetail,$rootScope){
